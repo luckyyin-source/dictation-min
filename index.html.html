@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>彩虹星空·英语拼写乐园</title>
+    <style>
+        /* 梦幻彩虹渐变背景与星空点缀 */
+        body { 
+            font-family: 'Arial Rounded MT Bold', Arial, sans-serif; 
+            text-align: center; 
+            background: linear-gradient(180deg, #f3e5f5 0%, #e8f5e9 100%); 
+            color: #2e7d32; 
+            margin: 0; 
+            padding: 10px; 
+            min-height: 100vh; 
+            box-sizing: border-box; 
+        }
+        .hidden { display: none !important; }
+        h1, h2, h3 { color: #6a1b9a; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); margin-top: 20px; }
+        
+        /* 首页关卡彩虹按钮 */
+        button { 
+            padding: 12px 24px; font-size: 18px; margin: 10px; border: none; 
+            background: linear-gradient(135deg, #ff7043, #ffb74d); color: white; 
+            border-radius: 25px; cursor: pointer; box-shadow: 0 4px #e64a19; 
+            transition: all 0.1s ease; -webkit-tap-highlight-color: transparent; 
+        }
+        button:active { box-shadow: 0 1px #e64a19; transform: translateY(3px); }
+        
+        .mode-btn { background: #ba68c8; box-shadow: 0 4px #8e24aa; }
+        .mode-btn.active { background: #7b1fa2; box-shadow: 0 4px #4a148c; font-weight: bold; }
+        .lesson-btn { background: linear-gradient(135deg, #26a69a, #4db6ac); box-shadow: 0 4px #00796b; width: 85%; max-width: 320px; font-size: 20px; }
+        
+        /* 游戏主面板（带有星空边框感） */
+        .game-box { 
+            background-color: white; border-radius: 30px; padding: 20px; margin: 15px auto; 
+            max-width: 400px; box-shadow: 0 8px 20px rgba(106,27,154,0.1); 
+            border: 4px dashed #ce93d8; position: relative;
+        }
+        #word-img { width: 160px; height: 160px; object-fit: contain; margin-top: 10px; }
+        
+        /* 【核心新增样式】：答题进度条 */
+        .progress-text {
+            font-size: 20px; font-weight: bold; color: #7b1fa2; margin: 5px 0 15px 0;
+            background: rgba(234, 128, 252, 0.15); display: inline-block; padding: 5px 20px; border-radius: 15px;
+        }
+
+        /* 字母槽位 */
+        .slots-container { margin: 25px 0; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .slot { width: 40px; height: 50px; border-bottom: 4px solid #ab47bc; font-size: 32px; font-weight: bold; line-height: 50px; text-transform: uppercase; color: #1565c0; text-align: center; }
+        .slot.fixed { border-bottom: none; color: #b0bec5; }
+        
+        /* 键盘区域：包含10%不透明度恐龙 */
+        .keyboard-container { 
+            max-width: 340px; margin: 20px auto; padding: 15px; position: relative; 
+            background: rgba(255, 255, 255, 0.6); border: 3px solid #b3e5fc; border-radius: 25px; 
+        }
+        .keyboard-container::before { 
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+            background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAIBAQEBAQIBAQECAgICAgQDAgICAgUEBAMEBgUGBgYFBgYGBwkIBgcJBwYGCAsICQoKCgoKBggLDAsKDAkKCgr/2wBDAQICAgICAgUDAgUKBwYHCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgr/wAARCADIAUADASIAAhEBAxEB/8QAHwAAAQUBABABAAAAAAAAAAAAAAECAwQFBgcICQoLAQACAgIDAQEAAAAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCkMscvKUtKXw4RInM4UUpDNfstHhJWdhcVMkWGV3gXOl9daGkaGjamwdIzhGWVhcXVlndGVmZ2hpamtsbW5vY3R1dnd4eXp7fH1+f3OEhYaHiImKi4yNjo+Ck5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29f359vX56v7aAAwDAQACEQAD8AAnYgYHT2qOObIAPWpMgjg0wFAwAcXWng7uB0FM9gacnFAwHCHMvXfegbZIAyKUePWnbdw9PagAHT6UAcAAY96MYHPftThnt3KgAHKnnrR26Z9fSgZ9ePanDg9fegBMc5Y8fSgc5GOlA/I9xTgMHAHXuaAEHA4XnHXNKAeB0/AUoxgDPA7/WgYPHUds/WgBcHOPpxSjggA/nTcnGD0pSe3rQApG73HpigDBOPXqaM8AY4A/CnHjgcgdaAG4OeOPf1p3HTGcc/hSA560AHPp6Z6UAO46YpQOckYpMY9+nNLjvQAoxnHvTuOnP600DnPQUuB6etAC4wM+1AGeKORwaPccUALxThkcZ7/0pAPWlxjrTGA4GBinDA6fjSD3pRzgfSgBw/lSj'); 
+            background-repeat: no-repeat; background-position: center; background-size: 65% auto; opacity: 0.1; z-index: 0; pointer-events: none; 
+        }
+        
+        /* 4x3 彩虹动态键盘 */
+        .keyboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; position: relative; z-index: 1; }
+        .key { 
+            color: white; border: none; border-radius: 18px; font-size: 26px; font-weight: bold; 
+            padding: 14px 0; text-transform: uppercase; transition: transform 0.1s;
+        }
+        .key:active { transform: scale(0.92); }
+        .key.clear-btn { background: #37474f !important; box-shadow: 0 5px #212121 !important; font-size: 18px; }
+        
+        textarea { width: 90%; height: 160px; font-size: 18px; padding: 10px; border-radius: 15px; border: 2px solid #ab47bc; margin-bottom: 10px; }
+        input[type="text"] { font-size: 18px; padding: 8px; border-radius: 10px; border: 2px solid #ccc; width: 80%; max-width: 300px; text-align: center; }
+        
+        /* 备份导入导出新样式盒 */
+        .backup-box { background: #fff3e0; border: 2px dashed #ffb74d; border-radius: 20px; padding: 15px; margin-top: 25px; }
+        #file-input { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="home-screen">
+        <h1 style="margin-top: 30px;">🌈✨ 拼写童话乐园🌙⭐</h1>
+        <h2>🌙 选择游戏模式 🌙</h2>
+        <button id="btn-simple" class="mode-btn active" onclick="setMode('Simple')">Simple (简单提示)</button>
+        <button id="btn-smarter" class="mode-btn" onclick="setMode('Smarter')">Smarter (进阶挑战)</button>
+        <button id="btn-all" class="mode-btn" onclick="setMode('All')" style="background: linear-gradient(135deg, #e91e63, #9c27b0); box-shadow: 0 4px #ad1457;">🔥 All (全库大乱斗)</button>
+        
+        <hr style="border: 1px dashed #ce93d8; margin: 20px 0;">
+        <h2 id="lesson-title-text">⭐ 选择精彩关卡 ⭐</h2>
+        <div id="lesson-list"></div>
+        <hr style="border: 1px dashed #ce93d8; margin: 20px 0;">
+        <button style="background: #78909c; box-shadow: 0 4px #546e7a; font-size: 15px;" onclick="switchScreen('admin-screen')">⚙️ 进入简易题库管理</button>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <div style="text-align: left;"><button onclick="goHome()" style="background: #e57373; box-shadow: 0 4px #e53935; padding: 6px 15px; font-size: 15px;">↩ 返回首页</button></div>
+        
+        <div id="progress-indicator" class="progress-text">✨ 第 0 / 0 题 ✨</div>
+
+        <div class="game-box">
+            <span style="position: absolute; top: 10px; left: 15px; font-size: 20px;">⭐</span>
+            <span style="position: absolute; top: 10px; right: 15px; font-size: 20px;">🌙</span>
+            <span style="position: absolute; bottom: 10px; left: 15px; font-size: 20px;">✨</span>
+            <span style="position: absolute; bottom: 10px; right: 15px; font-size: 20px;">⭐</span>
+            
+            <img id="word-img" src="" alt="单词图片"><br>
+            <button onclick="playAudio()" style="background: linear-gradient(135deg, #29b6f6, #0288d1); box-shadow: 0 4px #01579b; font-size: 16px; padding: 8px 20px;">🔊 听标准发音</button>
+            <div class="slots-container" id="slots-box"></div>
+        </div>
+        
+        <div style="color: #6a1b9a; font-size: 14px; margin-bottom: 5px;">✨ 动动小手，连出彩虹文字吧 ✨</div>
+        <div class="keyboard-container">
+            <div class="keyboard" id="keyboard-box"></div>
+        </div>
+    </div>
+
+    <div id="admin-screen" class="hidden">
+        <h2>⚙️ 简易题库输入</h2>
+        <p><strong>1. 输入你想修改或新建的课时名称：</strong></p>
+        <input type="text" id="input-lesson-name" value="Lesson 1" oninput="updateTextAreaByLessonName()"><br>
+        <p><strong>2. 单词列表（直接在下方增删修改，一行一个）：</strong></p>
+        <textarea id="input-words-list" placeholder="apple&#10;banana&#10;cat"></textarea><br>
+        <button onclick="saveLibraryText()" style="background: linear-gradient(135deg, #66bb6a, #43a047); box-shadow: 0 4px #2e7d32; font-size: 18px;">💾 保存当前修改</button>
+        <button onclick="switchScreen('home-screen')" style="background: #90a4ae; box-shadow: 0 4px #607d8b; font-size: 18px;">取消返回</button>
+
+        <div class="backup-box">
+            <h3>📦 题库文件备份与导入</h3>
+            <p style="font-size: 14px; color: #e65100; margin: 5px 0;">您可以将整个题库导出为独立文件，或选择文件直接恢复。</p>
+            <button onclick="exportLibraryToFile()" style="background: #ff9800; box-shadow: 0 4px #f57c00; font-size: 15px; padding: 8px 15px;">📤 导出题库为文件</button>
+            <label for="file-input">
+                <span style="display:inline-block; padding: 12px 24px; font-size: 15px; margin: 10px; border: none; background: #00bcd4; color: white; border-radius: 25px; cursor: pointer; box-shadow: 0 4px #0097a7;">📥 选择题库文件导入</span>
+            </label>
+            <input type="file" id="file-input" accept=".txt" onchange="importLibraryFromFile(this)">
+        </div>
+    </div>
+
+    <script>
+        const defaultLibrary = {
+            "Lesson 1": [
+                {"word": "apple", "img": "https://img.icons8.com/fluent/256/apple.png", "audio": "https://dict.youdao.com/dictvoice?audio=apple&type=2"},
+                {"word": "cat", "img": "https://img.icons8.com/fluent/256/cat.png", "audio": "https://dict.youdao.com/dictvoice?audio=cat&type=2"}
+            ],
+            "Lesson 2": [
+                {"word": "dog", "img": "https://img.icons8.com/fluent/256/dog.png", "audio": "https://dict.youdao.com/dictvoice?audio=dog&type=2"},
+                {"word": "banana", "img": "https://img.icons8.com/fluent/256/banana.png", "audio": "https://dict.youdao.com/dictvoice?audio=banana&type=2"}
+            ]
+        };
+
+        const rainbowColors = [
+            { bg: '#ef5350', shadow: '#c62828' }, { bg: '#ff7043', shadow: '#d84315' }, { bg: '#ffca28', shadow: '#ff8f00' }, 
+            { bg: '#66bb6a', shadow: '#2e7d32' }, { bg: '#42a5f5', shadow: '#1565c0' }, { bg: '#ab47bc', shadow: '#6a1b9a' }  
+        ];
+
+        let gameLibrary = JSON.parse(localStorage.getItem('english_game_lib')) || defaultLibrary;
+        let currentMode = 'Simple', currentLesson = '', currentWordIndex = 0, currentWordData = {}, userProgress = [], isFixedSlot = [];
+        let correctCount = 0, wrongCount = 0, shuffledWords = [];
+        let maxChallengeCount = 0; 
+
+        function init() { localStorage.setItem('english_game_lib', JSON.stringify(gameLibrary)); renderLessons(); }
+
+        function renderLessons() {
+            const listDiv = document.getElementById('lesson-list'); listDiv.innerHTML = '';
+            const titleText = document.getElementById('lesson-title-text');
+            
+            if(currentMode === 'All') {
+                titleText.innerText = "🔥 点击下方启动全库大乱斗 🔥";
+                const btn = document.createElement('button');
+                btn.className = 'lesson-btn';
+                btn.style.background = 'linear-gradient(135deg, #e91e63, #ff5722)';
+                btn.innerHTML = `🚀 开始全范围挑战 (不限时)`;
+                btn.onclick = () => startAllModeChallenge();
+                listDiv.appendChild(btn);
+            } else {
+                titleText.innerText = "⭐ 选择精彩关卡 ⭐";
+                Object.keys(gameLibrary).forEach(name => {
+                    const btn = document.createElement('button'); btn.className = 'lesson-btn'; btn.innerHTML = `🌟 ${name}`;
+                    btn.onclick = () => startLesson(name); listDiv.appendChild(btn);
+                });
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btn-simple').classList.toggle('active', mode === 'Simple');
+            document.getElementById('btn-smarter').classList.toggle('active', mode === 'Smarter');
+            document.getElementById('btn-all').classList.toggle('active', mode === 'All');
+            renderLessons();
+        }
+
+        function startAllModeChallenge() {
+            let allWordsPool = [];
+            Object.keys(gameLibrary).forEach(key => {
+                allWordsPool = allWordsPool.concat(gameLibrary[key]);
+            });
+
+            if (allWordsPool.length === 0) {
+                alert("⚠️ 当前系统题库是空的，请先去管理后台添加词汇哦！"); return;
+            }
+
+            const totalCount = allWordsPool.length;
+            let choice = prompt(`✨ 星空侦测：当前整个题库共有 ${totalCount} 个单词！\n\n你想挑战多少个词的拼写？(请输入数字，范围 1 ~ ${totalCount})`, totalCount);
+            
+            if (choice === null) return; 
+            let num = parseInt(choice.trim());
+            if (isNaN(num) || num <= 0) {
+                alert("请输入正确的挑战数量哦！"); return;
+            }
+            if (num > totalCount) num = totalCount; 
+
+            maxChallengeCount = num;
+            currentLesson = "All终极挑战";
+            currentWordIndex = 0; correctCount = 0; wrongCount = 0;
+            
+            shuffledWords = allWordsPool.sort(() => Math.random() - 0.5).slice(0, maxChallengeCount);
+            
+            switchScreen('game-screen'); 
+            loadWord();
+        }
+
+        function updateTextAreaByLessonName() {
+            const name = document.getElementById('input-lesson-name').value.trim();
+            if(gameLibrary[name]) {
+                document.getElementById('input-words-list').value = gameLibrary[name].map(i => i.word).join('\n');
+            } else {
+                document.getElementById('input-words-list').value = '';
+            }
+        }
+
+        function switchScreen(screenId) {
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('admin-screen').classList.add('hidden');
+            document.getElementById(screenId).classList.remove('hidden');
+            if(screenId === 'admin-screen') updateTextAreaByLessonName();
+        }
+
+        function goHome() { switchScreen('home-screen'); renderLessons(); }
+
+        function startLesson(name) { 
+            currentLesson = name; currentWordIndex = 0; correctCount = 0; wrongCount = 0; 
+            const originalWords = gameLibrary[currentLesson] || [];
+            shuffledWords = [...originalWords].sort(() => Math.random() - 0.5);
+            maxChallengeCount = shuffledWords.length;
+            switchScreen('game-screen'); loadWord(); 
+        }
+
+        function loadWord() {
+            if (!shuffledWords || shuffledWords.length === 0) { alert("⚠️ 题目池为空！"); goHome(); return; }
+            if (currentWordIndex >= shuffledWords.length) {
+                alert(`🌈 终极战报：你已完成预定挑战！\n\n📊 本局总战报：\n✅ 成功拼对：${correctCount} 题\n❌ 修正拼错：${wrongCount} 次\n\n全库大打乱也能通关，你太厉害了！🌙`);
+                goHome(); return;
+            }
+
+            // 【核心新增代码】：动态更新页面顶部的当前进度文本
+            document.getElementById('progress-indicator').innerText = `✨ 第 ${currentWordIndex + 1} / ${maxChallengeCount} 题 ✨`;
+
+            currentWordData = shuffledWords[currentWordIndex];
+            const len = currentWordData.word.length;
+            userProgress = new Array(len).fill(''); isFixedSlot = new Array(len).fill(false);
+            document.getElementById('word-img').src = currentWordData.img;
+            setTimeout(playAudio, 300);
+
+            let hintIndices = [];
+            if(currentMode === 'Simple') {
+                let hintCount = Math.floor(len / 2) || 1;
+                while(hintIndices.length < hintCount) {
+                    let r = Math.floor(Math.random() * len);
+                    if(!hintIndices.includes(r)) hintIndices.push(r);
+                }
+            }
+
+            const box = document.getElementById('slots-box'); box.innerHTML = '';
+            for (let i = 0; i < len; i++) {
+                const slot = document.createElement('div'); slot.className = 'slot';
+                if (currentMode === 'Simple' && hintIndices.includes(i)) {
+                    slot.innerText = currentWordData.word[i]; slot.classList.add('fixed');
+                    userProgress[i] = currentWordData.word[i]; isFixedSlot[i] = true;
+                }
+                box.appendChild(slot);
+            }
+            generateKeyboard();
+        }
+
+        function playAudio() { if(currentWordData.audio) new Audio(currentWordData.audio).play().catch(e=>{}); }
+
+        function generateKeyboard() {
+            const kbBox = document.getElementById('keyboard-box'); kbBox.innerHTML = '';
+            let uniqueRequired = [...new Set(currentWordData.word.toLowerCase().split(''))];
+            let alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+            
+            while (uniqueRequired.length < 11) {
+                let r = alphabet[Math.floor(Math.random() * alphabet.length)];
+                if (!uniqueRequired.includes(r)) uniqueRequired.push(r);
+            }
+            uniqueRequired.sort(() => Math.random() - 0.5);
+
+            uniqueRequired.forEach((l, index) => {
+                const btn = document.createElement('button'); btn.className = 'key'; btn.innerText = l;
+                const colorObj = rainbowColors[index % rainbowColors.length];
+                btn.style.background = colorObj.bg; btn.style.boxShadow = `0 5px ${colorObj.shadow}`;
+                btn.onclick = () => handleKeyClick(l); kbBox.appendChild(btn);
+            });
+
+            const clear = document.createElement('button'); clear.className = 'key clear-btn'; clear.innerText = '❌ 擦掉';
+            clear.onclick = handleClearClick; kbBox.appendChild(clear);
+        }
+
+        function handleKeyClick(l) {
+            const idx = userProgress.findIndex(item => item === '');
+            if (idx !== -1) {
+                userProgress[idx] = l;
+                document.getElementById('slots-box').children[idx].innerText = l;
+                if (!userProgress.includes('')) setTimeout(checkAnswer, 300);
+            }
+        }
+
+        function handleClearClick() {
+            for (let i = userProgress.length - 1; i >= 0; i--) {
+                if (userProgress[i] !== '' && !isFixedSlot[i]) {
+                    userProgress[i] = ''; document.getElementById('slots-box').children[i].innerText = ''; break;
+                }
+            }
+        }
+
+        function checkAnswer() {
+            if (userProgress.join('').toLowerCase() === currentWordData.word.toLowerCase()) {
+                alert("🌈 回答正确！好棒！✨"); correctCount++; currentWordIndex++; loadWord();
+            } else {
+                alert("❌ 拼错了！⭐"); wrongCount++;
+            }
+        }
+
+        function saveLibraryText() {
+            const name = document.getElementById('input-lesson-name').value.trim();
+            const text = document.getElementById('input-words-list').value.trim();
+            if (!name || !text) { alert("请确保填写了课时名称和单词！"); return; }
+            
+            const arr = text.split('\n').map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
+            gameLibrary[name] = arr.map(w => ({
+                "word": w, "img": `https://img.icons8.com/fluent/256/${w}.png`, "audio": `https://dict.youdao.com/dictvoice?audio=${w}&type=2`
+            }));
+            localStorage.setItem('english_game_lib', JSON.stringify(gameLibrary));
+            alert(`🌙 ${name} 已经保存修改！`); goHome();
+        }
+
+        function exportLibraryToFile() {
+            try {
+                const dataStr = JSON.stringify(gameLibrary, null, 2);
+                const blob = new Blob([dataStr], { type: "text/plain;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url; link.download = "dino_library_backup.txt";
+                document.body.appendChild(link); link.click();
+                document.body.removeChild(link); URL.revokeObjectURL(url);
+                alert("📤 题库已成功打包并下载为 'dino_library_backup.txt' 文件！");
+            } catch(e) {
+                alert("⚠️ 导出文件失败。");
+            }
+        }
+
+        function importLibraryFromFile(inputElement) {
+            const file = inputElement.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    const parsed = JSON.parse(content);
+                    if (typeof parsed === 'object' && parsed !== null) {
+                        gameLibrary = parsed;
+                        localStorage.setItem('english_game_lib', JSON.stringify(gameLibrary));
+                        alert("📥 成功从备份文件中加载并恢复了全部题库！");
+                        inputElement.value = "";
+                        goHome();
+                    } else {
+                        alert("⚠️ 导入失败：文件内部数据格式不符。");
+                    }
+                } catch(err) {
+                    alert("⚠️ 文件解析错误。");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
